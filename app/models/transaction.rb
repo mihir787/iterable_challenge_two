@@ -39,6 +39,6 @@ class Transaction < ActiveRecord::Base
   end
 
   def format_json
-    {"charge" => self.charge, "result" => self.result, "message" => nil}
+    {"charge" => self.charge, "result" => self.result, "message" => nil}.to_json
   end
 end
