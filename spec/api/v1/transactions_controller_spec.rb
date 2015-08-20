@@ -47,6 +47,16 @@ RSpec.describe "Api::V1::TransactionsController" do
 
     post '/api/v1/transactions.json', transaction_params
     expect(JSON.parse(response.body)).to eq({ "charge" => 0, "result" => "error", "message" => "invalid number of users" })
+  end
 
+  it 'has default price when bucket price not specified' do
+    transaction_params = {
+      "companyName" => "EAT24",
+      "totalMonthlyActiveUsers" => 6000,
+      "pricingBuckets"=>  [ { numUsers: 5000, price: "" } ]
+    }
+
+    post '/api/v1/transactions.json', transaction_params
+    expect(JSON.parse(response.body)).to eq({"charge"=>60000, "result"=>"success", "message"=>nil})
   end
 end
