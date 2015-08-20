@@ -4,8 +4,8 @@
 
 ##How to get running locally?
 
-Configuration: bundle install
+Configuration: 1. 'bundle install'
 
-Database creation: 1. rake db:create  2. rake db:migrate
+Database creation: 1. 'rake db:create'  2. 'rake db:migrate'
 
-How to run the test suite: 1. rspec
+How to run the test suite: 1. 'rspec'
