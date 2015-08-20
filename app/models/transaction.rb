@@ -13,17 +13,29 @@ class Transaction < ActiveRecord::Base
     users_left_to_calculate = totalMonthlyActiveUsers.to_i
     totals = []
     company.price_buckets.each_with_index do |bucket, index|
-      if company.price_buckets[index + 1] != nil && users_left_to_calculate >= company.price_buckets[index + 1].number_users
+      if self.users_left_to_calculate_more_than_next_bucket_limit?(company, index, users_left_to_calculate)
         users_left_to_calculate -= company.price_buckets[index + 1].number_users
-        totals << bucket.price * company.price_buckets[index + 1].number_users
-      elsif company.price_buckets[index + 1] != nil && users_left_to_calculate < company.price_buckets[index + 1].number_users
-        totals << users_left_to_calculate * bucket.price
+        totals << self.calculate_charge_for_bucket(company.price_buckets[index + 1].number_users, bucket)
+      elsif self.users_left_to_calculate_less_than_next_bucket_limit?(company, index, users_left_to_calculate)
+        totals << self.calculate_charge_for_bucket(users_left_to_calculate, bucket)
         users_left_to_calculate = 0
       else
-        totals << users_left_to_calculate * bucket.price
+        totals << self.calculate_charge_for_bucket(users_left_to_calculate, bucket)
       end
     end
     totals.reduce(:+)
+  end
+
+  def self.calculate_charge_for_bucket(users_left_to_calculate, bucket)
+    users_left_to_calculate * bucket.price
+  end
+
+  def self.users_left_to_calculate_more_than_next_bucket_limit?(company, index, users_left_to_calculate)
+    company.price_buckets[index + 1] != nil && users_left_to_calculate >= company.price_buckets[index + 1].number_users
+  end
+
+  def self.users_left_to_calculate_less_than_next_bucket_limit?(company, index, users_left_to_calculate)
+    company.price_buckets[index + 1] != nil && users_left_to_calculate >= company.price_buckets[index + 1].number_users
   end
 
   def format_json

@@ -8,7 +8,7 @@ RSpec.describe "Api::V1::TransactionsController" do
       "pricingBuckets"=> [ { numUsers: 0, price: 10} ]
     }
 
-    post '/api/v1/transactions.json', transaction_params
+    post '/api/v1/transactions', transaction_params
 
     expect(JSON.parse(response.body)).to eq({"charge"=>100000, "result"=>"success", "message"=>nil})
   end
@@ -20,7 +20,7 @@ RSpec.describe "Api::V1::TransactionsController" do
       "pricingBuckets"=> [ { numUsers: 0, price: 20}, { numUsers: 1000, price: 10} ]
     }
 
-    post '/api/v1/transactions.json', transaction_params
+    post '/api/v1/transactions', transaction_params
 
     expect(JSON.parse(response.body)).to eq({ "charge" => 110000, "result" => "success", "message" => nil })
   end
@@ -33,7 +33,7 @@ RSpec.describe "Api::V1::TransactionsController" do
       numUsers: 50000, price: 5 } ]
     }
 
-    post '/api/v1/transactions.json', transaction_params
+    post '/api/v1/transactions', transaction_params
     expect(JSON.parse(response.body)).to eq({"charge"=>2179915, "result"=>"success", "message"=>nil})
 
   end
@@ -45,7 +45,7 @@ RSpec.describe "Api::V1::TransactionsController" do
       "pricingBuckets"=>  [ { numUsers: 5000, price: 5} ]
     }
 
-    post '/api/v1/transactions.json', transaction_params
+    post '/api/v1/transactions', transaction_params
     expect(JSON.parse(response.body)).to eq({ "charge" => 0, "result" => "error", "message" => "invalid number of users" })
   end
 
@@ -56,7 +56,7 @@ RSpec.describe "Api::V1::TransactionsController" do
       "pricingBuckets"=>  [ { numUsers: 5000, price: "" } ]
     }
 
-    post '/api/v1/transactions.json', transaction_params
+    post '/api/v1/transactions', transaction_params
     expect(JSON.parse(response.body)).to eq({"charge"=>60000, "result"=>"success", "message"=>nil})
   end
 end
