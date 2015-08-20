@@ -1,3 +1,5 @@
 class Company < ActiveRecord::Base
-  validates :title, presence: true, uniqueness: true
+  has_many :transactions
+  has_many :price_buckets
+  validates :name, presence: true, uniqueness: true
 end

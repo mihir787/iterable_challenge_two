@@ -1,39 +1,19 @@
 class Api::V1::TransactionsController < ApplicationController
-  respond_to :json
-  before_filter :sanitize_params, except: [:show, :index, :destroy]
 
   def create
-    trade = Trade.create(proposed_trade_params)
-    respond_with :api, :v1, trade
-  end
+    if params[:totalMonthlyActiveUsers].to_i >= 0
+      company = Company.find_or_create_by(name: params[:companyName])
+      PriceBucket.delete_old_buckets(company)
+      params[:pricingBuckets].each do |bucket|
+        PriceBucket.create(price: bucket[:price], number_users: bucket[:numUsers], company_id: company.id)
+      end
+      charge = Transaction.calculate_charge(company, params[:totalMonthlyActiveUsers])
+      @transactions = Transaction.create(charge: charge, result: 1, company_id: company.id, total_monthly_active_users: params[:totalMonthlyActiveUsers])
+      render json: @transactions.format_json, message: nil
+    else
+      render json: { charge: 0, result: "error", message: "invalid number of users" }
+    end
 
-  def index
-    respond_with Trade.all
-  end
-
-  def show
-    respond_with Trade.find(params[:id].to_i)
-  end
-
-  def update
-    respond_with :api, :v1, Trade.update(params[:id].to_i, proposed_trade_params)
-  end
-
-  def destroy
-    respond_with Trade.destroy(params[:id])
-  end
-
-  private
-
-  def sanitize_params
-    params["trade"]["status"] = params["trade"]["status"].to_i
-  end
-
-  def proposed_trade_params
-    params.require(:trade).permit(:status,
-                                :item_id,
-                                :user_id,
-                                :message)
   end
 
 end

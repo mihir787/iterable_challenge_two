@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150819015843) do
+ActiveRecord::Schema.define(version: 20150819175457) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,21 +23,22 @@ ActiveRecord::Schema.define(version: 20150819015843) do
   end
 
   create_table "price_buckets", force: :cascade do |t|
-    t.integer  "price"
+    t.integer  "price",        default: 10
     t.integer  "company_id"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
-    t.integer  "number_users"
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.integer  "number_users", default: 0
   end
 
   add_index "price_buckets", ["company_id"], name: "index_price_buckets_on_company_id", using: :btree
 
   create_table "transactions", force: :cascade do |t|
     t.integer  "charge"
-    t.integer  "result",     default: 0
+    t.integer  "result",                     default: 0
     t.integer  "company_id"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+    t.integer  "total_monthly_active_users"
   end
 
   add_index "transactions", ["company_id"], name: "index_transactions_on_company_id", using: :btree
